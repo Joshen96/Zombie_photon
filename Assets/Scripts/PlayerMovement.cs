@@ -26,6 +26,15 @@ public class PlayerMovement : MonoBehaviour {
         Rotate();
 
         playerAnimator.SetFloat("Move", playerInput.move);
+
+        /*
+        if (playerInput.fire==true)
+        {
+            Gun gun = GetComponentInChildren<Gun>();
+            gun.Fire();
+        }
+        */ 
+        //무브만 다루기 위해 총쏘는건 다른스크립트 사용할것 발사 테스트만 해봄
     }
 
     // 입력값에 따라 캐릭터를 앞뒤로 움직임

@@ -32,25 +32,71 @@ public class Gun : MonoBehaviour {
 
     private void Awake() {
         // 사용할 컴포넌트의 참조 가져오기
+        bulletLineRenderer = GetComponent<LineRenderer>();
+        gunAudioPlayer = GetComponent<AudioSource>();
+
+        bulletLineRenderer.positionCount = 2;       //점2개사용
+        bulletLineRenderer.enabled = false; // 확실하게 비활성화 보장
     }
 
     private void OnEnable() {
         // 총 상태 초기화
+        ammoRemain = gunData.startAmmoRemain;
+        magAmmo = gunData.magCapacity;
+
+        state = State.Ready;
+        lastFireTime = 0f;
     }
 
     // 발사 시도
     public void Fire() {
+        if(state==State.Ready&&Time.time>=lastFireTime+gunData.timeBetFire)//상태가 준비 이고 발사하고 gunData.timeBetFire 시간이 지나야함
+        {
+            lastFireTime = Time.time;
+            //로직 마지막 발사시간+총의재발사 제한 시간보다 시간이 더지나야 발사가능
 
+            Shot();
+        }
     }
 
     // 실제 발사 처리
     private void Shot() {
-      
+        RaycastHit hit;
+        Vector3 hitPosition = Vector3.zero;
+
+        if(Physics.Raycast(fireTransform.position,fireTransform.forward,out hit, fireDistance)) //뭔가 맞으면
+        {
+            IDamageable target = hit.collider.GetComponent<IDamageable>();
+
+            if (target != null)
+            {
+                target.OnDamage(gunData.damage, hit.point, hit.normal);
+            }
+            hitPosition = hit.point;
+        }
+        else // 아무것도 안맞으면
+        {
+            hitPosition = fireTransform.position + fireTransform.forward * fireDistance;
+        }
+        StartCoroutine(ShotEffect(hitPosition));
+
+        magAmmo--;
+        if (magAmmo <= 0)
+        {
+            state = State.Empty;
+        }
     }
 
     // 발사 이펙트와 소리를 재생하고 탄알 궤적을 그림
     private IEnumerator ShotEffect(Vector3 hitPosition) {
         // 라인 렌더러를 활성화하여 탄알 궤적을 그림
+        muzzleFlashEffect.Play();
+        shellEjectEffect.Play();
+        gunAudioPlayer.PlayOneShot(gunData.shotClip);
+
+
+        bulletLineRenderer.SetPosition(0, fireTransform.position);
+        bulletLineRenderer.SetPosition(1, hitPosition);
         bulletLineRenderer.enabled = true;
 
         // 0.03초 동안 잠시 처리를 대기
