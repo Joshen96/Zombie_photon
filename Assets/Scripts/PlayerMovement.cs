@@ -12,20 +12,34 @@ public class PlayerMovement : MonoBehaviour {
 
     private void Start() {
         // 사용할 컴포넌트들의 참조를 가져오기
+        playerInput = GetComponent<PlayerInput>();
+        playerRigidbody = GetComponent<Rigidbody>();
+        playerAnimator = GetComponent<Animator>();
+
     }
 
     // FixedUpdate는 물리 갱신 주기에 맞춰 실행됨
     private void FixedUpdate() {
         // 물리 갱신 주기마다 움직임, 회전, 애니메이션 처리 실행
+
+        Move();
+        Rotate();
+
+        playerAnimator.SetFloat("Move", playerInput.move);
     }
 
     // 입력값에 따라 캐릭터를 앞뒤로 움직임
     private void Move() {
 
+        Vector3 moveDistance = playerInput.move * transform.forward * moveSpeed * Time.deltaTime;
+
+        playerRigidbody.MovePosition(this.transform.position+moveDistance); //물리적 이동
+        //transform.position = transform.position + moveDistance;           //트랜스폼 이동 벽뚤가능성
     }
 
     // 입력값에 따라 캐릭터를 좌우로 회전
     private void Rotate() {
-
+        float turn = playerInput.rotate * rotateSpeed * Time.deltaTime;
+        playerRigidbody.rotation = playerRigidbody.rotation * Quaternion.Euler(0, turn, 0);//피치(z축회전즉 캐릭터가 땅을 보던지 하늘을봄), 요(y축회전 좌우를봄), 롤(x축 회전 즉 배그마냥 q e 기울이기됨)
     }
 }
