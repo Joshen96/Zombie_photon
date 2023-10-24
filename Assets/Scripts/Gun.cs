@@ -72,9 +72,9 @@ public class Gun : MonoBehaviour {
             {
                 target.OnDamage(gunData.damage, hit.point, hit.normal);
             }
-            hitPosition = hit.point;
+            hitPosition = hit.point; //맞은곳 
         }
-        else // 아무것도 안맞으면
+        else // 아무것도 안맞으면 최대 사정거리까지
         {
             hitPosition = fireTransform.position + fireTransform.forward * fireDistance;
         }
