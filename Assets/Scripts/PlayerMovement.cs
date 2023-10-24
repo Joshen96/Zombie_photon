@@ -27,13 +27,13 @@ public class PlayerMovement : MonoBehaviour {
 
         playerAnimator.SetFloat("Move", playerInput.move);
 
-        /*
+        
         if (playerInput.fire==true)
         {
             Gun gun = GetComponentInChildren<Gun>();
             gun.Fire();
         }
-        */ 
+        
         //무브만 다루기 위해 총쏘는건 다른스크립트 사용할것 발사 테스트만 해봄
     }
 
