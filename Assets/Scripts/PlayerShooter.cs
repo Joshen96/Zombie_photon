@@ -29,6 +29,7 @@ public class PlayerShooter : MonoBehaviour {
 
     private void Update() {
         // 입력을 감지하고 총 발사하거나 재장전
+
     }
 
     // 탄약 UI 갱신
