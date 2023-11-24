@@ -48,7 +48,7 @@ public class Gun : MonoBehaviour {
         lastFireTime = 0f;
     }
 
-    // 발사 시도
+    // 발사 시도 연사 딜레이 
     public void Fire() {
         if(state==State.Ready&&Time.time>=lastFireTime+gunData.timeBetFire)//상태가 준비 이고 발사하고 gunData.timeBetFire 시간이 지나야함
         {
@@ -108,16 +108,34 @@ public class Gun : MonoBehaviour {
 
     // 재장전 시도
     public bool Reload() {
-        return false;
+        if(state==State.Reloading||ammoRemain<=0||magAmmo>=gunData.magCapacity)
+        {
+            return false;
+        }
+        StartCoroutine(ReloadRoutine());
+        return true;
     }
 
     // 실제 재장전 처리를 진행
     private IEnumerator ReloadRoutine() {
         // 현재 상태를 재장전 중 상태로 전환
         state = State.Reloading;
-      
+
+        gunAudioPlayer.PlayOneShot(gunData.reloadClip);
+
         // 재장전 소요 시간 만큼 처리 쉬기
         yield return new WaitForSeconds(gunData.reloadTime);
+
+        int ammoToFill = gunData.magCapacity - magAmmo;
+
+
+        if (ammoRemain < ammoToFill)
+        {
+            ammoToFill = ammoRemain;
+        }
+
+        magAmmo += ammoToFill;
+        ammoRemain -= ammoToFill;
 
         // 총의 현재 상태를 발사 준비된 상태로 변경
         state = State.Ready;
